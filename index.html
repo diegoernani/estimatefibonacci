@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estimativa Fibonacci</title>
+</head>
+<body>
+    <h1>Estimativa Fibonacci</h1>
+
+    <!-- Formulário de Login -->
+    <div>
+        <label for="session">ID da Sessão:</label>
+        <input type="text" id="session">
+        <label for="username">Nome de Usuário:</label>
+        <input type="text" id="username">
+        <button onclick="login()">Login</button>
+        <p>Usuários na sessão: <span id="user-count">0</span></p>
+    </div>
+
+    <!-- Sequência Fibonacci -->
+    <div>
+        <h2>Sequência Fibonacci</h2>
+        <p>Escolha um número:</p>
+        <div id="fibonacci-buttons"></div>
+    </div>
+
+    <!-- Armazenamento dos Votos -->
+    <div>
+        <h2>Votos</h2>
+        <div id="user-votes"></div>
+    </div>
+
+    <!-- Botão para Revelar e Calcular a Média -->
+    <div>
+        <button onclick="revealVotes()">Revelar Votos e Calcular Média</button>
+        <p>Média: <span id="average"></span></p>
+    </div>
+
+    <!-- Botão para Remover Itens do Firebase -->
+    <div>
+	    <p></p>
+        <button onclick="removeItemsFromFirebase()">Remover Usuarios da sessão atual Firebase</button>
+    </div>
+
+    <!-- Botão para Limpar Todos os Usuários -->
+	<div>
+	    <p></p> 
+		<button onclick="clearAllUsers()">Limpar Todos os Usuários</button>
+	</div>
+	
+	<!-- Botão para Limpar Todos os Votos -->
+	<div>
+	    <p></p>
+		<button onclick="clearAllVotes()">Limpar Todos os Votos</button>
+	</div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
+
+    <script>   
+        // Configure o Firebase com suas credenciais        
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_FIREBASE",
+            authDomain: "SUA_URL_FIREBASE",
+            databaseURL: "SUA_URL_FIREBASE",
+            projectId: "SUA_ID_PROJETOS_FIREBASE",
+            storageBucket: "SUA_BUCKET_FIREBASE",
+            messagingSenderId: "IDID",
+            appId: "SUA_API_ID_FIREBASE"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        // Referência ao nó de usuários logados no Firebase Realtime Database
+        const usersRef = firebase.database().ref("users");
+
+        let currentUser = null;
+        let usedNumbers = new Set();
+
+        function generateSessionToken() {
+            return Math.random().toString(36).substring(2);
+        }
+
+        function login() {
+            const session = document.getElementById("session").value;
+            const username = document.getElementById("username").value;
+
+            if (!session) {
+                const sessionToken = generateSessionToken();
+                document.getElementById("session").value = sessionToken;
+                currentUser = { username, sessionToken };
+                addUserToFirebase(sessionToken, username);
+            } else {
+                if (username) {
+                    if (!usedNumbers.has(session)) {
+                        currentUser = { username, session };
+                        addUserToFirebase(session, username);
+                        usedNumbers.add(session);
+                    } else {
+                        alert("Sessão já usada.");
+                    }
+                } else {
+                    alert("Nome de usuário inválido.");
+                }
+            }
+
+            updateSessionUserCount(session);
+            generateFibonacciButtons();
+        }
+
+        function addUserToFirebase(session, username) {
+            usersRef.child(session).set(username);
+        }
+		
+		// Função para limpar todos os usuários
+		function clearAllUsers() {
+			// Remova todos os usuários no Firebase Realtime Database
+			const usersRef = firebase.database().ref("users");
+			usersRef.remove()
+				.then(() => {
+					console.log("Todos os usuários foram removidos com sucesso do Firebase");
+				})
+				.catch(error => {
+					console.error("Erro ao remover todos os usuários do Firebase:", error);
+				});
+
+			// Limpe a exibição do contador de usuários na sessão
+			document.getElementById("user-count").textContent = "0";
+		}
+		
+		// Função para limpar todos os votos
+		function clearAllVotes() {
+			if (currentUser) {
+				// Remova todos os votos do usuário logado no Firebase Realtime Database
+				const votesRef = firebase.database().ref(`votes/${currentUser.session}`);
+				votesRef.remove()
+					.then(() => {
+						console.log("Todos os votos foram removidos com sucesso do Firebase");
+						usedNumbers.clear(); // Limpe o conjunto de números usados
+						updateVotesDisplay(); // Atualize a exibição dos votos
+					})
+					.catch(error => {
+						console.error("Erro ao remover todos os votos do Firebase:", error);
+					});
+			} else {
+				alert("Faça o login antes de remover os votos.");
+			}
+		}
+
+
+        // Função para remover itens do Firebase
+        function removeItemsFromFirebase() {
+			const session = document.getElementById("session").value;
+
+			// Remova todos os usuários da sessão no Firebase Realtime Database
+			const usersRef = firebase.database().ref("users");
+			usersRef.child(session).remove()
+				.then(() => {
+					console.log("Usuários removidos com sucesso do Firebase");
+				})
+				.catch(error => {
+					console.error("Erro ao remover usuários do Firebase:", error);
+				});
+
+			// Remova todos os votos da sessão no Firebase Realtime Database
+			const votesRef = firebase.database().ref("votes");
+			votesRef.child(session).remove()
+				.then(() => {
+					console.log("Votos removidos com sucesso do Firebase");
+				})
+				.catch(error => {
+					console.error("Erro ao remover votos do Firebase:", error);
+				});
+		}	
+
+        function generateFibonacciButtons() {
+            const fibonacciButtonsDiv = document.getElementById("fibonacci-buttons");
+            fibonacciButtonsDiv.innerHTML = "";
+
+            let a = 0, b = 1;
+
+            while (a + b < 200) {
+                const number = a + b;
+
+                if (!usedNumbers.has(number)) {
+                    const button = document.createElement("button");
+                    button.textContent = number;
+                    button.onclick = () => vote(number);
+                    fibonacciButtonsDiv.appendChild(button);
+                    usedNumbers.add(number);
+                }
+
+                const temp = a + b;
+                a = b;
+                b = temp;
+            }
+        }
+
+        function vote(number) {
+			if (currentUser) {				
+				firebase.database().ref(`votes/${currentUser.session}/${currentUser.username}`).push(number)
+					.then(() => {
+						usedNumbers.add(number);
+						updateVotesDisplay();
+					})
+					.catch(error => {
+						alert("Erro ao adicionar voto ao Firebase Realtime Database: " + error);
+					});
+				
+			} else {
+				alert("Faça o login antes de votar.");
+			}
+					
+		}
+
+        function updateVotesDisplay() {
+            const userVotesDiv = document.getElementById("user-votes");
+            userVotesDiv.innerHTML = "Seus votos:<br>";
+
+            firebase.database().ref(`votes/${currentUser.session}/${currentUser.username}`).once('value')
+                .then(snapshot => {
+                    snapshot.forEach(childSnapshot => {
+                        const vote = childSnapshot.val();
+                        userVotesDiv.innerHTML += `Número: ${vote}<br>`;
+                    });
+                })
+                .catch(error => {
+                    alert("Erro ao recuperar votos do Firebase Realtime Database: " + error);
+                });
+        }
+
+        function revealVotes() {
+            if (currentUser) {
+                const session = currentUser.session;
+
+                firebase.database().ref(`votes/${session}`).once('value')
+                    .then(snapshot => {
+                        const allVotes = [];
+                        snapshot.forEach(userSnapshot => {
+                            userSnapshot.forEach(childSnapshot => {
+                                const vote = childSnapshot.val();
+                                allVotes.push(vote);
+                            });
+                        });
+
+                        const totalVotes = allVotes.length;
+                        const sum = allVotes.reduce((acc, current) => acc + current, 0);
+                        const average = totalVotes > 0 ? sum / totalVotes : 0;
+
+                        document.getElementById("average").textContent = average.toFixed(2);
+                    })
+                    .catch(error => {
+                        alert("Erro ao recuperar votos do Firebase Realtime Database: " + error);
+                    });
+            } else {
+                alert("Faça o login antes de revelar os votos.");
+            }
+        }
+
+        function updateSessionUserCount(session) {
+            firebase.database().ref(`users/${session}`).once('value')
+                .then(snapshot => {
+                    const userCount = snapshot.numChildren();
+                    document.getElementById("user-count").textContent = userCount;
+                })
+                .catch(error => {
+                    alert("Erro ao recuperar o contador de usuários da sessão: " + error);
+                });
+        }
+    </script>
+</body>
+</html>
