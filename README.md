@@ -1,9 +1,9 @@
 ## 💻 Estimate-Fibonacci
-![GitHub repo size](https://img.shields.io/github/repo-size/diegoernani/README-template?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/iuricode/README-template?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/diegoernani/README-template?style=for-the-badge)
-![Bitbucket open issues](https://img.shields.io/bitbucket/issues/iuricode/README-template?style=for-the-badge)
-![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/iuricode/README-template?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/diegoernani/estimatefibonacci?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/diegoernani/estimatefibonacci?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/diegoernani/estimatefibonacci?style=for-the-badge)
+![Bitbucket open issues](https://img.shields.io/bitbucket/issues/diegoernani/estimatefibonacci?style=for-the-badge)
+![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/diegoernani/estimatefibonacci?style=for-the-badge)
 
 ![image](https://github.com/diegoernani/estimatefibonacci/assets/5751929/8e5c8850-20ae-4c7b-a71b-01f7480dddc8)
 
