@@ -18,3 +18,8 @@ Clique no botão referente ao número da sequência que desejar e aguarde os out
 Selecionei o 5 e após os usuário lançarem, clique em Revelar Votos e calcular a média
 
 ![image](https://github.com/diegoernani/estimatefibonacci/assets/5751929/c2072662-5e8f-4622-b8c8-4df86aa05266)
+
+
+## 📝 Licença
+
+Esse projeto está sob licença. Veja o arquivo [LICENÇA](LICENSE.md) para mais detalhes.
