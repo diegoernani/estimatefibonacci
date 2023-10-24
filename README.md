@@ -1,5 +1,14 @@
 ## 💻 Estimate-Fibonacci
+
+![image](https://github.com/diegoernani/estimatefibonacci/assets/5751929/8e5c8850-20ae-4c7b-a71b-01f7480dddc8)
+
 Estimate para equipes usando sequência fibonacci
+
+
+## ☕ Usando <nome_do_projeto>
+
+Para usar <nome_do_projeto>, siga estas etapas:
+
 
 ![image](https://github.com/diegoernani/estimatefibonacci/assets/5751929/8e5c8850-20ae-4c7b-a71b-01f7480dddc8)
 
