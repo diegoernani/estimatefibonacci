@@ -9,6 +9,8 @@ Estimate para equipes usando sequência fibonacci
 
 Para usar Estimate-Fibonacci, siga estas etapas:
 
+Acesse a URL https://estimate-one.vercel.app/ ou a sua localhost;
+
 
 ![image](https://github.com/diegoernani/estimatefibonacci/assets/5751929/8e5c8850-20ae-4c7b-a71b-01f7480dddc8)
 
